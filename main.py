@@ -1,4 +1,5 @@
 import requests
+import urllib
 
 ACCESS_TOKEN = '6237175266.3c426f2.3fca7d5581864fbcb3cfa347ce8221cc'
 BASE_URL = 'https://api.instagram.com/v1/'
@@ -42,7 +43,6 @@ def get_user_info(insta_username):
         print 'User does not exist!'
         exit()
     request_url = (BASE_URL + 'users/%s?access_token=%s') % {user_id, ACCESS_TOKEN}
-    print 'GET request url : %s' % (request_url)
     user_info = requests.get(request_url).json()
 
     if user_info['meta']['code'] == 200:
@@ -57,4 +57,44 @@ def get_user_info(insta_username):
         print 'Error Occurred. Try after sometime.'
 
 
-self_info()
+def get_own_post():
+    request_url = (BASE_URL + 'users/self/media/recent/?access_token=%s') % ACCESS_TOKEN
+    own_media = requests.get(request_url).json()
+
+    if own_media['meta']['code'] == 200:
+        if len(own_media['data']):
+            image_name = own_media['data'][0]['id'] + '.jpeg'
+            image_url = own_media['data'][0]['images']['standard_resolution']['url']
+            urllib.urlretrieve(image_url, image_name)
+            print 'Your image has been downloaded!'
+        else:
+            print 'Post does not exist!'
+    else:
+        print 'Error Occurred. Try after sometime.'
+    return None
+
+
+def get_user_post(insta_username):
+    user_id = get_user_id(insta_username)
+    if user_id == None:
+        print 'User does not exist!'
+        exit()
+    request_url = (BASE_URL + 'users/%s/media/recent/?access_token=%s') % (user_id, ACCESS_TOKEN)
+    user_media = requests.get(request_url).json()
+
+    if user_media['meta']['code'] == 200:
+        if len(user_media['data']):
+            return user_media['data'][0]['id']
+        else:
+            print 'Post does not exist!'
+    else:
+        print 'Error Occurred. Try after sometime.'
+    return None
+
+
+
+
+
+# self_info()
+insta_username = str(raw_input("Enter username you want to search : "))
+get_user_info(insta_username)
