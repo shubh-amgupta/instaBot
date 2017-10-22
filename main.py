@@ -226,10 +226,11 @@ def delete_comment_with_word(insta_username):
         print 'Error Occurred. Try after sometime.'
 
 
-print "Welcome to InstaBot\n"
-menu_choice = raw_input("Enter your choice:\n1. Get your own info.\n2. Get a user's info\n3. Get your posts.\n4. Get user's post.\n5. Like a post.\n6. Get user's list.\n7. Post a comment.\n8. Delete a negative comment.\n9. Delete all negative comments.\n10. Delete comment with a particular word.\n11. Exit")
+choice = True
+while choice == True:
+    print "Welcome to InstaBot\n"
+    menu_choice = int(raw_input("Enter your choice:\n1. Get your own info.\n2. Get a user's info\n3. Get your posts.\n4. Get user's post.\n5. Like a post.\n6. Get user's list.\n7. Post a comment.\n8. Delete a negative comment.\n9. Delete all negative comments.\n10. Delete comment with a particular word.\n11. Exit \n"))
 
-while menu_choice != 11:
     if menu_choice == 1:
         self_info()
     elif menu_choice == 2:
@@ -259,5 +260,5 @@ while menu_choice != 11:
         insta_username = raw_input("Enter username of user : ")
         delete_comment_with_word(insta_username)
     else:
-        exit()
+        choice = False
 
