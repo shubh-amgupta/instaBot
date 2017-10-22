@@ -28,8 +28,9 @@ def self_info():
 #function to fetch user's id from username
 def get_user_id(insta_username):
     request_url = (BASE_URL + 'users/search?q=%s&access_token=%s') % (insta_username, ACCESS_TOKEN)
+    #print request_url
     user_info = requests.get(request_url).json()
-
+    #print user_info
     if user_info['meta']['code'] == 200:
         if len(user_info['data']):
             return user_info['data'][0]['id']
@@ -160,12 +161,12 @@ def delete_negative_comment(insta_username):
     if comment_info['meta']['code'] == 200:
         if len(comment_info['data']):
             comment_text = comment_info['data'][0]['text']
-            comment_id = comment_info['data']['id']
+            comment_id = comment_info['data'][0]['id']
             blob = TextBlob(comment_text, analyzer=NaiveBayesAnalyzer()) #analyse comment if negative or positive
-            if blob.sentiment['classification'] == 'NEG':
+            if blob.sentiment[0] == 'neg':
                 request_url = (BASE_URL + 'media/%s/comments/%s?access_token=%s') % (media_id, comment_id, ACCESS_TOKEN)
-                comment_result = requests.get(request_url).json() #delete a comment url
-                if comment_info['meta']['code'] == 200:
+                comment_result = requests.delete(request_url).json() #delete a comment url
+                if comment_result['meta']['code'] == 200:
                     print "Comment deleted Successfully!"
                 else:
                     print "Comment deletion Unsuccessful."
@@ -185,12 +186,13 @@ def delete_all_negative_comment(insta_username):
         if len(comment_info['data']):
             for comment in comment_info['data']:
                 comment_text = comment_info['data'][comment]['text']
-                comment_id = comment_info['data']['id']
-                blob = TextBlob(comment_text, analyzer=NaiveBayesAnalyzer()) #analyse comment if negative or positive
-                if blob.sentiment['classification'] == 'NEG':
-                    request_url = (BASE_URL + 'media/%s/comments/%s?access_token=%s') % (media_id, comment_id, ACCESS_TOKEN)
-                    comment_result = requests.get(request_url).json() #delete a comment url
-                    if comment_info['meta']['code'] == 200:
+                comment_id = comment_info['data'][comment]['id']
+                blob = TextBlob(comment_text, analyzer=NaiveBayesAnalyzer())  # analyse comment if negative or positive
+                if blob.sentiment[0] == 'neg':
+                    request_url = (BASE_URL + 'media/%s/comments/%s?access_token=%s') % (
+                    media_id, comment_id, ACCESS_TOKEN)
+                    comment_result = requests.delete(request_url).json()  # delete a comment url
+                    if comment_result['meta']['code'] == 200:
                         print "Comment deleted Successfully!"
                     else:
                         print "Comment deletion Unsuccessful."
@@ -224,6 +226,7 @@ def delete_comment_with_word(insta_username):
             print 'There are no existing comments on the post!'
     else:
         print 'Error Occurred. Try after sometime.'
+
 
 
 choice = True
